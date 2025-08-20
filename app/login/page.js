@@ -5,6 +5,8 @@ import { useState } from "react";
 import { FormEvent } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+
 export default function Register() {
   const [email, setEmail] = useState("ryan@gmail.com");
   const [password, setPassword] = useState("rrrrrr");
@@ -12,8 +14,21 @@ export default function Register() {
   const router = useRouter();
   const handleSubmit = async (e) => {
     e.preventDefault();
-    //
+    setLoading(true);
+    const result = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+    setLoading(false);
+    if (result?.error) {
+      toast.error(result?.error);
+    } else {
+      toast.success("Login success");
+      router.push("/");
+    }
   };
+
   return (
     <main>
       <div className="container">
